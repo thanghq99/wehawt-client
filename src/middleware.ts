@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 import { auth } from '@/auth';
 
@@ -8,7 +8,7 @@ export const config = {
   matcher: ['/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)'],
 };
 
-export default auth((req: NextRequest) => {
+export default auth(req => {
   const url = req.nextUrl;
 
   let hostname = req.headers
@@ -37,6 +37,7 @@ export default auth((req: NextRequest) => {
   }
 
   if (hostname === `me.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`) {
+    if (!req.auth) NextResponse.redirect('/login');
     console.log('rewired to me');
     return NextResponse.rewrite(
       new URL(`/me${path === '/' ? '' : path}`, req.url),
